@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  mini-currency-exchange:
+    build:
+      context: docker
+    container_name: mini-currency-exchange
+    restart: on-failure
+    tty: true
+    stdin_open: true
+    volumes:
+      - "./:/app"

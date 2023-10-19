@@ -1,0 +1,21 @@
+{
+    "name": "tomem92/mini-currency-exchange",
+    "description": "Mini Currency Exchange Lib",
+    "license": "proprietary",
+    "type": "library",
+    "require": {
+        "php": ">=8.2",
+        "phpunit/phpunit": "^10.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "MiniCurrencyExchange\\": "src/",
+            "Test\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tomasz Malaika"
+        }
+    ]
+}
