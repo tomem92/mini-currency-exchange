@@ -14,3 +14,8 @@ composer i
 
 ## Installation as a package
 `composer require tomem92/mini-currency-exchange`
+
+## Unit tests
+Just run
+`.phpunit`
+in the container to run all PHPUnit tests 🎉
