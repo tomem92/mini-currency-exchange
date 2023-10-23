@@ -4,34 +4,43 @@ declare(strict_types=1);
 
 namespace MiniCurrencyExchange\Domain\Entity;
 
-final class Order extends AbstractEntity
+use MiniCurrencyExchange\Domain\Interface\EntityInterface;
+
+final class Order implements EntityInterface
 {
-    public const BUY_TYPE = 'buy';  //todo move these types to separate OrderType entity & repo
+    public const BUY_TYPE = 'buy';  //todo move these types to separate OrderType entity/enum & repo
     public const SELL_TYPE = 'sell';
 
     /**
      * @var float
      */
-    private float $commissionValue = 0.0;
+    private float $commissionValue;
 
     /**
      * @var float
      */
-    private float $withdrawalAmount = 0.0;
+    private float $withdrawalAmount;
 
     public function __construct(
-        int $id,
-        private float $amount,
-        private Currency $currencyFrom,
-        private Currency $currencyTo,
-        private float $commissionRate,
-        private float $currencyRate,
-        private string $orderType,
-        private \DateTime $createdAt,
-        private \DateTime $paidAt,
-        private User $createdBy,
+        private readonly int $id,
+        private readonly float $amount,
+        private readonly Currency $currencyFrom,
+        private readonly Currency $currencyTo,
+        private readonly float $commissionRate,
+        private readonly float $currencyRate,
+        private readonly string $orderType,
+        private readonly \DateTime $createdAt,
+        private readonly \DateTime $paidAt,
+        private readonly User $createdBy,
     ) {
-        parent::__construct($id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     /**
@@ -223,12 +232,11 @@ final class Order extends AbstractEntity
     }
 
     /**
-     * @param float $withdrawalAmount
      * @return Order
      */
-    public function setWithdrawalAmount(float $withdrawalAmount): Order
+    public function setWithdrawalAmount(): Order
     {
-        $this->withdrawalAmount = $withdrawalAmount;
+        $this->withdrawalAmount = $this->getAmount() * $this->getCurrencyRate();
         return $this;
     }
 }

@@ -8,7 +8,7 @@ use MiniCurrencyExchange\Domain\Entity\Commission;
 use MiniCurrencyExchange\Domain\Interface\EntityInterface;
 use MiniCurrencyExchange\Domain\Interface\FactoryInterface;
 
-final class CommissionFactory implements FactoryInterface
+final readonly class CommissionFactory implements FactoryInterface
 {
     /**
      * @inheritDoc

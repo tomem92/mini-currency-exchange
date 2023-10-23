@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MiniCurrencyExchange\Domain\Entity;
 
-final class Currency extends AbstractEntity
+final readonly class Currency extends AbstractEntity
 {
     public function __construct(
         int $id,

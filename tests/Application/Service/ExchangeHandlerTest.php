@@ -17,7 +17,7 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class ExchangeHandlerTest extends TestCase
+final class ExchangeHandlerTest extends TestCase
 {
     /**
      * @var ExchangeHandler
@@ -188,6 +188,7 @@ class ExchangeHandlerTest extends TestCase
         );
 
         $order = $this->prepareFakeOrder($euro, $pound, 'invalid type');
+        $this->testClass->setOrder($order);
 
         $this->expectException(InvalidOrderTypeException::class);
         $this->expectExceptionMessage('OrderType invalid type doesn\'t exists');

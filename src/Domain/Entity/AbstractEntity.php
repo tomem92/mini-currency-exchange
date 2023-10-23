@@ -6,7 +6,7 @@ namespace MiniCurrencyExchange\Domain\Entity;
 
 use MiniCurrencyExchange\Domain\Interface\EntityInterface;
 
-abstract class AbstractEntity implements EntityInterface
+abstract readonly class AbstractEntity implements EntityInterface
 {
     public function __construct(
         protected int $id

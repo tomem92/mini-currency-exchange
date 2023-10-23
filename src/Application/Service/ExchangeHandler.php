@@ -20,10 +20,10 @@ final class ExchangeHandler
     private Order $order;
 
     public function __construct(
-        private Currency $currency,
-        private Commission $commission,
-        private User $user,
-        private CurrencyRateRepository $currencyRateRepository
+        private readonly Currency $currency,
+        private readonly Commission $commission,
+        private readonly User $user,
+        private readonly CurrencyRateRepository $currencyRateRepository
     ) {
     }
 
@@ -35,15 +35,14 @@ final class ExchangeHandler
         float $amount,
         Currency $wantedCurrency
     ): void {
-        $order = $this->prepareOrder(
+        $this->prepareOrder(
             $amount,
             $wantedCurrency,
             Order::BUY_TYPE
         );
 
-        $this->setOrder($order);
-        $this->setCommissionValueForOrder($order);
-        $order->setWithdrawalAmount($order->getAmount() * $order->getCurrencyRate());
+        $this->setCommissionValueForOrder();
+        $this->getOrder()->setWithdrawalAmount();
     }
 
     /**
@@ -54,15 +53,14 @@ final class ExchangeHandler
         float $amount,
         Currency $wantedCurrency
     ): void {
-        $order = $this->prepareOrder(
+        $this->prepareOrder(
             $amount,
             $wantedCurrency,
             Order::SELL_TYPE
         );
 
-        $this->setOrder($order);
-        $order->setWithdrawalAmount($order->getAmount() * $order->getCurrencyRate());
-        $this->setCommissionValueForOrder($order);
+        $this->getOrder()->setWithdrawalAmount();
+        $this->setCommissionValueForOrder();
     }
 
     /**
@@ -159,42 +157,47 @@ final class ExchangeHandler
      * @param float $amount
      * @param Currency $wantedCurrency
      * @param string $orderType
-     * @return Order
+     * @throws \DomainException
      */
     private function prepareOrder(
         float $amount,
         Currency $wantedCurrency,
         string $orderType
-    ): Order {
-        return new Order(
-            OrderRepository::getLastId() + 1,
-            $amount,
-            $this->getCurrency(),
-            $wantedCurrency,
-            $this->commission->getPercentageValue(),
-            $this->getCurrencyRateRepository()->getRateByCurrencies($this->currency, $wantedCurrency)->getRate(),
-            $orderType,
-            new \DateTime(),
-            new \DateTime(),
-            $this->getUser()
+    ): void {
+        $currencyRate = $this->getCurrencyRateRepository()->getRateByCurrencies($this->currency, $wantedCurrency);
+        if (null === $currencyRate) {
+            throw new \DomainException('Cannot fetch currency rate.');
+        }
+
+        $this->setOrder(
+            new Order(
+                OrderRepository::getLastId() + 1,
+                $amount,
+                $this->getCurrency(),
+                $wantedCurrency,
+                $this->commission->getPercentageValue(),
+                $currencyRate->getRate(),
+                $orderType,
+                new \DateTime(),
+                new \DateTime(),
+                $this->getUser()
+            )
         );
     }
 
     /**
-     * @param Order $order
      * @throws InvalidOrderTypeException
      */
-    private function setCommissionValueForOrder(Order $order): void
+    private function setCommissionValueForOrder(): void
     {
+        $order = $this->getOrder();
         $orderType = $order->getOrderType();
 
-        if (Order::BUY_TYPE === $orderType) {
-            $amountToBeCommissioned = $order->getAmount();
-        } elseif (Order::SELL_TYPE === $orderType) {
-            $amountToBeCommissioned = $order->getWithdrawalAmount();
-        } else {
-            throw new InvalidOrderTypeException(\sprintf('OrderType %s doesn\'t exists', $orderType));
-        }
+        $amountToBeCommissioned = match ($orderType) {
+            Order::BUY_TYPE => $order->getAmount(),
+            Order::SELL_TYPE => $order->getWithdrawalAmount(),
+            default => throw new InvalidOrderTypeException(\sprintf('OrderType %s doesn\'t exists', $orderType))
+        };
 
         $order->setCommissionValue($amountToBeCommissioned * $order->getCommissionRate());
     }

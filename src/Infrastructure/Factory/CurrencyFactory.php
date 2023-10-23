@@ -8,7 +8,7 @@ use MiniCurrencyExchange\Domain\Entity\Currency;
 use MiniCurrencyExchange\Domain\Interface\EntityInterface;
 use MiniCurrencyExchange\Domain\Interface\FactoryInterface;
 
-final class CurrencyFactory implements FactoryInterface
+final readonly class CurrencyFactory implements FactoryInterface
 {
     /**
      * @inheritDoc

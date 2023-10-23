@@ -8,7 +8,7 @@ use MiniCurrencyExchange\Application\Query\MySqlBasicQueries;
 use MiniCurrencyExchange\Domain\Entity\AbstractEntity;
 use MiniCurrencyExchange\Domain\Interface\RepositoryInterface;
 
-final class UserRepository implements RepositoryInterface
+final readonly class UserRepository implements RepositoryInterface
 {
     private const TABLE = 'user';
 

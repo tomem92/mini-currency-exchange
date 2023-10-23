@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace MiniCurrencyExchange\Application\Exception;
 
-class InvalidOrderTypeException extends \Exception implements \Throwable
+final class InvalidOrderTypeException extends \Exception implements \Throwable
 {
 }
